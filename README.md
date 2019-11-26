@@ -31,7 +31,7 @@ Jest no requiere configuraciones adicionales demasiado complejas para añadir pr
 
 ```bash
 ➜  yarn add -D jest @types/jest
-➜  yarn add -D --exact @babel/core @babel/preset-env babel-jest babel-polyfill
+➜  yarn add -D --exact @babel/core @babel/preset-env babel-jest @babel/polyfill
 ```
 
 ```bash
@@ -321,6 +321,8 @@ Watch Usage
 
 #### Setup and Teardown
 
+A menudo, mientras escribe pruebas, tiene que realizar algún trabajo de configuración antes de ejecutar las pruebas, y tiene que terminar algún trabajo después de la ejecución de las pruebas. Jest proporciona funciones de ayuda para manejar esto.
+
 - **\_\_test\_\_/setup.test.js**
 
 ```js
@@ -337,4 +339,132 @@ describe('Prepare before execute', () => {
     expect(true).toBeTruthy();
   });
 });
+```
+
+```bash
+➜  yarn test setup.test.js
+```
+
+### Testing Asynchronous Code
+
+#### Callbacks
+
+- **callbacks.js**
+
+```js
+export const callbackHell = (callback) => {
+  callback('Hello JavaScript');
+};
+```
+
+- **\_\_test\_\_/callbacks.test.js**
+
+```js
+import { callbackHell } from '../callbacks';
+
+describe('Test a Callback', () => {
+  test('Callback', done => {
+    function otherCallback(data) {
+      expect(data).toBe('Hello JavaScript');
+
+      done();
+    }
+
+    callbackHell(otherCallback);
+  });
+});
+```
+
+```bash
+➜  yarn test callbacks.test.js
+```
+
+#### Promises
+
+```bash
+➜  yarn add axios --exact 
+```
+
+- **promise.js**
+
+```js
+import axios from 'axios';
+
+export const getDataFromApi = url => {
+  return axios.get(url)
+    .then(({ data }) => data)
+    .catch(error => error);
+};
+```
+
+- **\_\_test\_\_/promise.test.js**
+
+```js
+import { getDataFromApi } from '../promise';
+
+describe('Test promises', () => {
+  test('Get data from API', () => {
+    const url = 'https://rickandmortyapi.com/api/character/';
+
+    return getDataFromApi(url)
+      .then(data => {
+        console.log(data.results.length);
+        
+        expect(data.results.length).toBeGreaterThan(0);
+      });
+  });
+});
+```
+
+```bash
+➜  yarn test promise.test.js
+```
+
+#### .resolves / .rejects
+
+- **\_\_test\_\_/promise.test.js**
+
+```js
+describe('Test promises', () => {
+  // ...
+
+  test('Resolves an "hello"', () => {
+    return expect(Promise.resolve('hello')).resolves.toBe('hello');
+  });
+
+  test('Rejects with an error', () => {
+    return expect(Promise.reject('ERROR')).rejects.toBe('ERROR');
+  });
+});
+```
+
+```bash
+➜  yarn test promise.test.js
+```
+
+#### Async/Await
+
+- **\_\_test\_\_/async.test.js**
+
+```js
+import '@babel/polyfill';
+import { getDataFromApi } from '../promise';
+
+describe('Test Async/Await', () => {
+  test('Get data from API', async () => {
+    const url = 'https://rickandmortyapi.com/api/character/';
+    const data = await getDataFromApi(url);
+    
+    expect(data.results.length).toBeGreaterThan(0);
+    
+    const urlRick = 'https://rickandmortyapi.com/api/character/1';
+    const dataRick = await getDataFromApi(urlRick).then(data => data);
+
+    expect(dataRick.name).toEqual('Rick Sanchez');
+  });
+});
+```
+
+```bash
+➜  yarn test async.test.js
 ```
