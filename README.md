@@ -468,3 +468,70 @@ describe('Test Async/Await', () => {
 ```bash
 ➜  yarn test async.test.js
 ```
+
+### Snapshot Testing
+
+Las pruebas de instantáneas son una herramienta muy útil siempre que desee asegurarse de que su IU no cambie inesperadamente.
+
+- **rick.json**
+
+```json
+{
+  "id": 1,
+  "name": "Rick Sanchez",
+  "status": "Alive",
+  "species": "Human",
+  "gender": "Male"
+}
+```
+
+- **snapshot.js**
+
+```js
+export const getCharacter = data => ({
+  "id": data.id,
+  "name": data.name,
+  "status": data.status,
+  "species": data.species,
+  "gender": data.gender,
+});
+```
+
+- **\_\_test\_\_/snapshot.test.js**
+
+```js
+import { getCharacter } from '../snapshot';
+import rick from '../rick.json';
+
+describe('Snapshot test', () => {
+  test('Snapshot', () => {
+    expect(getCharacter(rick)).toMatchSnapshot();
+  });
+
+  test('Snapshot failure', () => {
+    const user = {
+      createdAt: new Date(),
+      id: Math.floor(Math.random() * 20),
+    };
+
+    expect(user).toMatchSnapshot();
+  });
+
+  test('Snapshot exception', () => {
+    const user = {
+      id: Math.floor(Math.random() * 20),
+      name: "Miguel Angel",
+    };
+
+    expect(user).toMatchSnapshot({
+      id: expect.any(Number),
+    });
+  });
+});
+```
+
+```bash
+➜  yarn test snapshot.test.js
+
+➜  yarn test -u
+```
