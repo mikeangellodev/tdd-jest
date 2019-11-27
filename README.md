@@ -613,3 +613,40 @@ describe('HelloWorld.vue', () => {
 ```
 
 ### Express.js
+
+https://github.com/gndx/platzi-express-jest
+
+```bash
+➜  yarn add -D @babel/core @babel/cli @babel/preset-env jest supertest --exact
+```
+
+- **platzi-express-jest/\_\_test\_\_/app.test.js**
+
+```js
+const request = require('supertest');
+const app = require('../app');
+
+describe('Express.js test', () => {
+  test('should response to the GET method', done => {
+    request(app).get('/').then(response => {
+      expect(response.statusCode).toBe(200);
+
+      done();
+    });
+  });
+});
+```
+
+```bash
+➜  npx jest
+
+ PASS  __test__/app.test.js
+  Express.js test
+    ✓ should response to the GET method (29ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       1 passed, 1 total
+Snapshots:   0 total
+Time:        1.311s, estimated 2s
+Ran all test suites.
+```
