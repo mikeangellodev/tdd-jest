@@ -564,7 +564,6 @@ describe('Test React', () => {
 
     expect(h1.text()).toBe('Hello Jest');
   });
-  
 });
 ```
 
@@ -573,4 +572,44 @@ describe('Test React', () => {
 ```
 
 ### Vue.js
+
+https://github.com/gndx/platzi-vue-jest
+
+- **platzi-vue-jest/test/unit/jest.conf.js**
+
+```js
+
+module.exports = {
+  testURL: 'http://localhost',
+}
+```
+
+- **platzi-vue-jest/test/unit/specs/HelloWorld.spec.js**
+
+```js
+import Vue from 'vue'
+import HelloWorld from '@/components/HelloWorld'
+
+describe('HelloWorld.vue', () => {
+  it('should render correct contents', () => {
+    const Constructor = Vue.extend(HelloWorld)
+    const vm = new Constructor().$mount()
+
+    expect(vm.$el.querySelector('.hello h1').textContent)
+      .toEqual('Hello Vue :)')
+  });
+
+  test('Snapshot Vue.js', () => {
+    const Constructor = Vue.extend(HelloWorld);
+    const vm = new Constructor().$mount()
+
+    expect(vm.$el).toMatchSnapshot();
+  });
+})
+```
+
+```bash
+➜  yarn test
+```
+
 ### Express.js
